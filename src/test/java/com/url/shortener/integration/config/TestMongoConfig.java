@@ -11,13 +11,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class TestMongoConfig {
 
     @Value("${spring.data.mongodb.host}")
-    private int mongoHost;
+    private String mongoHost;
 
     @Value("${spring.data.mongodb.port}")
-    private int mongoPort;
+    private Integer mongoPort;
 
     @Value("${spring.data.mongodb.testdatabase}")
-    private int database;
+    private String database;
 
     @Bean
     public MongoClient mongoClient() {
