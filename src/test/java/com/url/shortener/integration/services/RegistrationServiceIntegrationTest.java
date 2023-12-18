@@ -2,19 +2,23 @@ package com.url.shortener.integration.services;
 
 import com.url.shortener.exceptions.users.InvalidUsernameException;
 import com.url.shortener.exceptions.users.UsernameAlreadyExistsException;
+import com.url.shortener.integration.config.TestMongoConfig;
 import com.url.shortener.models.User;
 import com.url.shortener.payload.RegistrationRequest;
 import com.url.shortener.repositories.UserRepository;
 import com.url.shortener.services.RegistrationService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@Import(TestMongoConfig.class)
 class RegistrationServiceIntegrationTest {
 
     @Autowired
@@ -25,6 +29,11 @@ class RegistrationServiceIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
 
     @Test
     void testRegister_SuccessfulRegistration() {
@@ -55,9 +64,16 @@ class RegistrationServiceIntegrationTest {
         registrationRequest.setEmail("test@example.com");
         registrationRequest.setPassword("testpassword");
 
+        registrationService.register(registrationRequest);
+
+        RegistrationRequest registrationRequest2 = new RegistrationRequest();
+        registrationRequest2.setUsername("testuser");
+        registrationRequest2.setEmail("test@example.com");
+        registrationRequest2.setPassword("testpassword");
+
         // Act and Assert
         assertThrows(UsernameAlreadyExistsException.class,
-                () -> registrationService.register(registrationRequest));
+                () -> registrationService.register(registrationRequest2));
     }
 
     @Test

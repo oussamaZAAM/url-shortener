@@ -1,6 +1,8 @@
 package com.url.shortener.unit.controllers;
 
 import com.url.shortener.controllers.UrlShorteningController;
+import com.url.shortener.dto.ErrorResponse;
+import com.url.shortener.dto.ShortenedUrlResponse;
 import com.url.shortener.exceptions.urls.UrlShorteningException;
 import com.url.shortener.payload.OriginalUrlPayload;
 import com.url.shortener.services.UrlShortenerService;
@@ -14,10 +16,10 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UrlShorteningControllerTest {
 
@@ -33,20 +35,23 @@ public class UrlShorteningControllerTest {
     }
 
     @Test
-    public void testShortenUrl_Successful() {
-        // Mock the behavior of the UrlShortenerService
-        when(urlShortenerService.shortenUrl(any(String.class))).thenReturn("mockedShortUrl");
+    void testShortenUrl_Success() {
+        // Arrange
+        OriginalUrlPayload urlPayload = new OriginalUrlPayload("http://example.com");
+        when(urlShortenerService.shortenUrl(urlPayload.getOriginalUrl())).thenReturn("http://short.url");
 
-        // Create an example OriginalUrlPayload
-        OriginalUrlPayload urlPayload = new OriginalUrlPayload();
-        urlPayload.setOriginalUrl("http://www.example.com");
-
-        // Call the controller method
+        // Act
         ResponseEntity<?> responseEntity = urlShortening.shortenUrl(urlPayload);
 
-        // Verify the response
+        // Assert
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(Map.of("shortUrl", "mockedShortUrl"), responseEntity.getBody());
+        assertNotNull(responseEntity.getBody());
+        assertTrue(responseEntity.getBody() instanceof ShortenedUrlResponse);
+        ShortenedUrlResponse responseBody = (ShortenedUrlResponse) responseEntity.getBody();
+        assertEquals("http://short.url", responseBody.getShortUrl());
+
+        // Verify that the urlShortenerService.shortenUrl method was called with the correct parameter
+        verify(urlShortenerService, times(1)).shortenUrl("http://example.com");
     }
 
     @Test
@@ -76,19 +81,22 @@ public class UrlShorteningControllerTest {
     }
 
     @Test
-    public void testShortenUrl_UrlShorteningException() {
-        // Mock the behavior of the UrlShortenerService to throw an exception
-        when(urlShortenerService.shortenUrl(any(String.class))).thenThrow(new UrlShorteningException("Error"));
+    void testShortenUrl_ExpectationFailed() {
+        // Arrange
+        OriginalUrlPayload urlPayload = new OriginalUrlPayload("http://example.com");
+        when(urlShortenerService.shortenUrl(any())).thenThrow(new UrlShorteningException("Failed to shorten URL"));
 
-        // Create an example OriginalUrlPayload
-        OriginalUrlPayload urlPayload = new OriginalUrlPayload();
-        urlPayload.setOriginalUrl("http://www.example.com");
-
-        // Call the controller method
+        // Act
         ResponseEntity<?> responseEntity = urlShortening.shortenUrl(urlPayload);
 
-        // Verify the response for a URL shortening exception
+        // Assert
         assertEquals(HttpStatus.EXPECTATION_FAILED, responseEntity.getStatusCode());
-        assertEquals(Map.of("message", "Error"), responseEntity.getBody());
+        assertNotNull(responseEntity.getBody());
+        assertTrue(responseEntity.getBody() instanceof ErrorResponse);
+        ErrorResponse responseBody = (ErrorResponse) responseEntity.getBody();
+        assertEquals("Failed to shorten URL", responseBody.getMessage());
+
+        // Verify that the urlShortenerService.shortenUrl method was called with the correct parameter
+        verify(urlShortenerService, times(1)).shortenUrl("http://example.com");
     }
 }

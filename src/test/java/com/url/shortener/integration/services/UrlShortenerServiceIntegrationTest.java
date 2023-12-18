@@ -1,17 +1,21 @@
 package com.url.shortener.integration.services;
 
+import com.url.shortener.integration.config.TestMongoConfig;
 import com.url.shortener.models.UrlEntity;
 import com.url.shortener.repositories.UrlRepository;
 import com.url.shortener.services.UrlShortenerService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
+@Import(TestMongoConfig.class)
 public class UrlShortenerServiceIntegrationTest {
 
     @Autowired
@@ -20,6 +24,10 @@ public class UrlShortenerServiceIntegrationTest {
     @Autowired
     private UrlRepository urlRepository;
 
+    @AfterEach
+    void tearDown() {
+        urlRepository.deleteAll();
+    }
 
     @Test
     public void testShortenUrl_SuccessfulShortening() {

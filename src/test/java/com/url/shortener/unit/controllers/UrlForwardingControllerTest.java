@@ -69,10 +69,10 @@ public class UrlForwardingControllerTest {
         ResponseEntity<String> responseEntity = urlForwarding.expandUrl(null, response);
 
         // Verify the response for a null short URL
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
 
         // Ensure that sendError was called instead
-        verify(response).sendError(HttpStatus.BAD_REQUEST.value(), "Short URL cannot be null");
+        verify(response).sendError(HttpStatus.NOT_FOUND.value(), "Short URL cannot be null");
     }
 
     @Test
@@ -81,9 +81,9 @@ public class UrlForwardingControllerTest {
         ResponseEntity<String> responseEntity = urlForwarding.expandUrl("", response);
 
         // Verify the response for an empty short URL
-        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
 
         // Ensure that sendError was called instead
-        verify(response).sendError(HttpStatus.BAD_REQUEST.value(), "Short URL cannot be null");
+        verify(response).sendError(HttpStatus.NOT_FOUND.value(), "Short URL cannot be null");
     }
 }
