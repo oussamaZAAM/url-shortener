@@ -4,7 +4,10 @@ stages:
   - test
 
 services:
-  - mongo:latest
+  - name: mongo:latest
+    alias: mongodb
+  - name: redis:latest
+    alias: redis
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
@@ -27,4 +30,10 @@ maven-build:
 maven-test:
   image: maven:3.8.4-openjdk-17
   stage: test
-  script: mvn test
+  script: mvn test \
+          -Dspring.data.redis.host=redis \
+          -Dspring.data.redis.port=6379 \
+          -Dspring.data.redis.url=redis://redis:6379 \
+          -spring.data.mongodb.host=mongodb \
+          -spring.data.mongodb.port=27017 \
+          -spring.data.mongodb.database=url-shortener
