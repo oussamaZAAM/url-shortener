@@ -11,12 +11,12 @@ services:
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
-  MONGODB_HOST: "mongodb"
-  MONGODB_PORT: "27017"
-  MONGODB_DB: "url-shortener"
-  REDIS_HOST: "redis"
-  REDIS_PORT: "6379"
-  REDIS_PASSWORD: "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81"
+  MONGODB_HOST: $MONGODB_HOST
+  MONGODB_PORT: $MONGODB_PORT
+  MONGODB_DB: $MONGODB_DB
+  REDIS_HOST: $REDIS_HOST
+  REDIS_PORT: $REDIS_PORT
+  REDIS_PASSWORD: $REDIS_PASSWORD
 
 #sast:
 #  stage: sast
