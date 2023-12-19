@@ -3,7 +3,6 @@ package com.url.shortener.integration.repository;
 import com.url.shortener.integration.config.TestMongoConfig;
 import com.url.shortener.models.UrlEntity;
 import com.url.shortener.repositories.UrlRepository;
-import com.url.shortener.repositories.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
